@@ -18,72 +18,7 @@ jobs:
         # 必须检出代码
         fetch-depth: 2
 
-    # 1. (新增) 安装所有必需的构建依赖
-    # ----------------------------------------
-    # FRR 项目需要很多依赖。你必须在这里安装它们。
-    # 导致你出错的 'AX_PROG_LUA' 宏通常在 'autoconf-archive' 包中。
-    - name: Install build dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          autoconf \
-          automake \
-          libtool \
-          make \
-          g++ \
-          pkg-config \
-          autoconf-archive  # <-- 极有可能是缺失的包
-        # ... 在这里添加 FRR 项目需要的所有其他依赖...
-        # 例如: libjson-c-dev, libyang-dev, libft-dev 等等
-
-    # 2. (修改) 初始化 CodeQL
-    # ----------------------------------------
-    # 这一步只初始化，不再尝试自动构建
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: cpp
-        # 如果你的项目有复杂的构建过程，可能需要这个
-        # config-file: ./.github/codeql/codeql-config.yml
-
-    # 3. (新增) 手动执行构建步骤
-    # ----------------------------------------
-    # 运行与你本地构建完全相同的命令。
-    # CodeQL 会在后台跟踪这些命令。
-    - name: Build FRR
-      run: |
-        ./bootstrap.sh
-        ./configure
-        make
-        # 注意：不需要 'make install'
-
-    # 4. (修改) 执行 CodeQL 分析
-    # ----------------------------------------
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4name: CodeQL Analysis
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        # 必须检出代码
-        fetch-depth: 2
-
-    # 1. (新增) 安装所有必需的构建依赖
-    # ----------------------------------------
-    # FRR 项目需要很多依赖。你必须在这里安装它们。
-    # 导致你出错的 'AX_PROG_LUA' 宏通常在 'autoconf-archive' 包中。
+    # 1. 安装所有必需的构建依赖
     - name: Install build dependencies
       run: |
         sudo apt-get update
@@ -105,22 +40,15 @@ jobs:
           libsystemd-dev \
           libcap-dev \
           libreadline-dev \
-          autoconf-archive
+          autoconf-archive  # 修复 autoconf 宏错误的包
 
-    # 2. (修改) 初始化 CodeQL
-    # ----------------------------------------
-    # 这一步只初始化，不再尝试自动构建
+    # 2. 初始化 CodeQL
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
         languages: cpp
-        # 如果你的项目有复杂的构建过程，可能需要这个
-        # config-file: ./.github/codeql/codeql-config.yml
 
-    # 3. (新增) 手动执行构建步骤
-    # ----------------------------------------
-    # 运行与你本地构建完全相同的命令。
-    # CodeQL 会在后台跟踪这些命令。
+    # 3. 手动执行构建步骤
     - name: Build FRR
       run: |
         ./bootstrap.sh
@@ -128,7 +56,6 @@ jobs:
         make
         # 注意：不需要 'make install'
 
-    # 4. (修改) 执行 CodeQL 分析
-    # ----------------------------------------
+    # 4. 执行 CodeQL 分析
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
