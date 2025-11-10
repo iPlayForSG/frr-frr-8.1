@@ -21,8 +21,12 @@ jobs:
     # 1. 安装所有必需的构建依赖
     - name: Install build dependencies
       run: |
-        sudo add-apt-repository universe  # <-- 新增：启用 universe 仓库
-        sudo apt-get update               # <-- 新增：再次更新以加载 universe
+        sudo add-apt-repository universe
+        
+        # 关键！! 必须在添加仓库后、安装前，强制刷新 apt 缓存
+        sudo apt-get update
+        
+        # 现在，apt 知道 libyang-dev 在哪里了
         sudo apt-get install -y \
           git \
           autoconf \
@@ -41,8 +45,7 @@ jobs:
           libcap-dev \
           libreadline-dev \
           autoconf-archive
-        # 'libft-dev' 已被删除，因为它不是一个 apt 包
-
+          
     # 2. 初始化 CodeQL
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
