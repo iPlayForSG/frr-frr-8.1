@@ -21,7 +21,8 @@ jobs:
     # 1. 安装所有必需的构建依赖
     - name: Install build dependencies
       run: |
-        sudo apt-get update
+        sudo add-apt-repository universe  # <-- 新增：启用 universe 仓库
+        sudo apt-get update               # <-- 新增：再次更新以加载 universe
         sudo apt-get install -y \
           git \
           autoconf \
@@ -36,11 +37,11 @@ jobs:
           python3-pytest \
           libjson-c-dev \
           libyang-dev \
-          libft-dev \
           libsystemd-dev \
           libcap-dev \
           libreadline-dev \
-          autoconf-archive  # 修复 autoconf 宏错误的包
+          autoconf-archive
+        # 'libft-dev' 已被删除，因为它不是一个 apt 包
 
     # 2. 初始化 CodeQL
     - name: Initialize CodeQL
